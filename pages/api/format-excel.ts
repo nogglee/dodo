@@ -6,7 +6,7 @@ import path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
 
-const PYTHON_PATH = "/Users/eunjilee/.venvs/dodo_env/bin/python3";
+const PYTHON_PATH = process.env.PYTHON_PATH || "python3";
 
 export const config = {
   api: {
