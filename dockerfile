@@ -1,15 +1,21 @@
-# 1️⃣ Python이 설치된 공식 이미지를 가져옴
-FROM python:3.9-slim
+# 기본 이미지: Python이 포함된 Node.js 환경 사용
+FROM node:18-bullseye
 
-# 2️⃣ 작업 디렉토리를 설정 (Vercel에서 사용할 폴더)
+# Python 및 필요한 패키지 설치
+RUN apt-get update && apt-get install -y python3 python3-pip
+
+# 작업 디렉토리 설정
 WORKDIR /app
 
-# 3️⃣ 필요한 파일 복사 (Python 스크립트 및 패키지 설치 파일)
-COPY decrypt_excel.py .
-COPY requirements.txt .
+# 의존성 파일 복사
+COPY package*.json ./
+RUN npm install
 
-# 4️⃣ 필요한 패키지 설치
-RUN pip install -r requirements.txt
+# 모든 코드 복사
+COPY . .
 
-# 5️⃣ 서버 실행 (여기서는 Flask 사용 예시)
-CMD ["python", "decrypt_excel.py"]
+# 실행 권한 부여
+RUN chmod +x decrypt_excel.py
+
+# 기본 실행 명령
+CMD ["npm", "run", "start"]
