@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
-  const [data, setData] = useState<any[]>([]);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   const handleUpload = async () => {
     if (!file) return alert("파일을 선택하세요!");
@@ -10,27 +10,35 @@ export default function Home() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("/api/upload", {
+    const res = await fetch("http://localhost:3000/api/format-excel", {
       method: "POST",
       body: formData,
     });
+  
 
-    const result = await res.json();
-    setData(result.formattedData);
+    if (!res.ok) {
+      alert("엑셀 변환 실패");
+      return;
+    }
+
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    setDownloadUrl(url);
   };
 
   return (
-    <div className="container">
+    <div>
       <h1>엑셀 업로드</h1>
       <input type="file" accept=".xlsx" onChange={(e) => setFile(e.target.files[0])} />
-      <button onClick={handleUpload}>업로드</button>
+      <button onClick={handleUpload}>업로드 및 변환</button>
 
-      <h2>결과</h2>
-      <ul>
-        {data.map((item, index) => (
-          <li key={index}>{item.name} - {item.phone} - {item.amount}</li>
-        ))}
-      </ul>
+      {downloadUrl && (
+        <div>
+          <a href={downloadUrl} download="formatted.xlsx">
+            변환된 엑셀 다운로드
+          </a>
+        </div>
+      )}
     </div>
   );
 }
