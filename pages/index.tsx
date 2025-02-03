@@ -10,7 +10,8 @@ export default function Home() {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch("http://dodogo.vercel.app/api/format-excel", {
+    const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
+    const res = await fetch(`${API_BASE}/api/format-excel`, {
       method: "POST",
       body: formData,
     });
