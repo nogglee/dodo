@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { IncomingForm, File } from "formidable";
+import formidable from "formidable";
 import { readFile } from "fs/promises";
 import * as XLSX from "xlsx";
 import path from "path";
@@ -14,7 +14,7 @@ export const config = {
 // Formidable을 Promise로 감싸서 파일 업로드 처리
 const parseForm = (req: NextApiRequest): Promise<{ files: formidable.Files }> => {
   return new Promise((resolve, reject) => {
-    const form = new IncomingForm({
+    const form = new formidable.IncomingForm({
       multiples: false,
       uploadDir: "/tmp",
       keepExtensions: true,
@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: "File not found or invalid file" });
     }
 
-    const file = Array.isArray(files.file) ? files.file[0] : (files.file as File);
+    const file = Array.isArray(files.file) ? files.file[0] : (files.file as formidable.File);
     if (!file.filepath) {
       return res.status(400).json({ error: "Invalid file path" });
     }
